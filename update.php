@@ -1,25 +1,20 @@
 <?php
 include_once  $_SERVER['DOCUMENT_ROOT'] ."/wine/common.php";
-
+include $_SERVER['DOCUMENT_ROOT'] ."/wine/dao/Product_managementDAO.php";
 // if($_SESSION['userid']!="admin"){
 //     Util::alert_redirect("권한이 없습니다.", "../../login.php");
 // }
 $sfst_cate = isset($_GET['fst_cate'])?trim($_GET['fst_cate']):"";
 $ssnd_cate = isset($_GET['snd_cate'])?trim($_GET['snd_cate']):"";
 $skey = isset($_GET['skey'])?trim($_GET['skey']):"";
-$seng_name = isset($_GET['eng_name'])?trim($_GET['eng_name']):"";
-$seng_name = str_replace("'","\'",$seng_name);
-//리스트 조회
-$query = "
-	select *
-	from product_info a
-		left outer join sales_info b
-		on a.eng_name = b.eng_name
-	where b.isnew = 'new' and a.eng_name='$seng_name'
-	group by a.eng_name";
-	
-$result = mysqli_query($db_conn, $query);
-$row = mysqli_fetch_assoc($result);
+$product_code = isset($_GET['product_code'])?trim($_GET['product_code']):"";
+
+if(!empty($product_code)){
+	$product_info = new Product_managementDAO($pdo, "product_info");
+	$rows = $product_info->salesPdtDetail($product_code);
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="ko">
@@ -52,7 +47,7 @@ $row = mysqli_fetch_assoc($result);
 <input type="hidden" name="mode" value="update"/>
 <input type="hidden" name="sfst_cate" value="<?php echo $sfst_cate;?>"/>
 <input type="hidden" name="ssnd_cate" value="<?php echo $ssnd_cate;?>"/>
-<input type="hidden" name="skey" value="<?php echo $skey;?>"/>
+<input type="hidden" name="skey" value="<?php echo urlencode($skey);?>"/>
 	<div class="main_content">
     		<div class="main_title">
     			<h2>상품정보수정</h2>
@@ -62,7 +57,7 @@ $row = mysqli_fetch_assoc($result);
                    	 카테고리
 				</p>
                 <select name="fst_cate" value="1차 카테고리" class="sfst_cate">
-					<option value="snack" <?php if("snack"==$sfst_cate){echo "selected";}else{echo "";}?>>간식</option>
+					<option value="snack" <?= "snack"==$sfst_cate ? "selected" : ""?>>간식</option>
                 	<option value="cs" <?php if("cs"==$sfst_cate){echo "selected";}else{echo "";}?>>Champagne & Sparkling</option>
                     <option value="sw" <?php if("sw"==$sfst_cate){echo "selected";}else{echo "";}?>>Sweet Wines</option>
                     <option value="ww" <?php if("ww"==$sfst_cate){echo "selected";}else{echo "";}?>>White Wine</option>
@@ -109,25 +104,27 @@ $row = mysqli_fetch_assoc($result);
                     ?>
                 </select>
             </div>
+			<?php foreach($rows as $row) : ?>
 			<div class="layout">
     			<p class="manager_cate_font">상품명(eng)</p>
-            	<input type="text" name="eng_name" value="<?php echo $row['eng_name']?>" class="rg_input" id="eng_name" readOnly>
+            	<input type="text" name="eng_name" value="<?php echo htmlspecialchars($row['eng_name']);?>" class="rg_input" id="eng_name">
+				<input type="hidden" name="product_code" value="<?=$product_code?>">
 			</div>
 			<div class="layout">
     			<p class="manager_cate_font">상품명(kor)</p>
-            	<input type="text" name="kor_name" value="<?php echo $row['kor_name']?>" class="rg_input" id="kor_name">
+            	<input type="text" name="kor_name" value="<?php echo htmlspecialchars($row['kor_name']);?>" class="rg_input" id="kor_name">
 			</div>
 			<div class="layout">
     			<p class="manager_cate_font">와이너리</p>
-            	<input type="text" name="origin" value="<?php echo $row['origin']?>" class="rg_input" id="origin">
+            	<input type="text" name="origin" value="<?php echo htmlspecialchars($row['origin']);?>" class="rg_input" id="origin">
 			</div>
 			<div class="layout">
     			<p class="manager_cate_font">국가</p>
-            	<input type="text" name="type" value="<?php echo $row['type']?>" class="rg_input" id="type">
+            	<input type="text" name="type" value="<?php echo htmlspecialchars($row['type']);?>" class="rg_input" id="type">
 			</div>
 			<div class="layout">
     			<p class="manager_cate_font">품종</p>
-            	<input type="text" name="personality" value="<?php echo $row['personality']?>" class="rg_input" id="personality">
+            	<input type="text" name="personality" value="<?php echo htmlspecialchars($row['personality']);?>" class="rg_input" id="personality">
 			</div>
 			<div class="layout">
     			<p class="manager_cate_font">상품이미지</p>
@@ -140,24 +137,35 @@ $row = mysqli_fetch_assoc($result);
 			</div>
 			<div class="layout">
     			<p class="manager_cate_font">재고수량</p>
-            	<input type="text" name="stock" value="<?php echo ($row['initial_stock']-$row['quantity']);?>" class="rg_input1" id="stock">
+				<?php 
+					if(isset($row['initial_stock']) && isset($row['quantity'])){
+						$stock = $initStock - $initQtt;
+					}
+					else{
+						$stock = "";
+					}
+				?>
+            	<input type="text" name="stock" value="<?php echo $stock;?>" class="rg_input1" id="stock">
 			</div>
 			<div class="layout">
     			<p class="manager_cate_font">입고가</p>
-            	<input type="text" name="in_price" value="<?php echo $row['in_price']?>" class="rg_input1" id="in_price">
+            	<input type="text" name="in_price" value="<?php echo htmlspecialchars($row['in_price']);?>" class="rg_input1" id="in_price">
 			</div>
 			<div class="layout">
     			<p class="manager_cate_font">판매가</p>
-            	<input type="text" name="out_price" value="<?php echo $row['out_price']?>" class="rg_input1" id="out_price">
+            	<input type="text" name="out_price" value="<?php echo htmlspecialchars($row['out_price']);?>" class="rg_input1" id="out_price">
 			</div>
 			<div class="layout">
                 <p class="manager_cate_font">상세설명</p>
-                <textarea name="description" id="description" cols="30" rows="20"><?php echo textarea_replace($row['descr'])?></textarea>
+                <textarea name="description" id="description" cols="30" rows="20"><?php echo textarea_replace($row['descr']);?></textarea>
 			</div>
 			<div class="btn_wrap rg_btn_wrap">
 				<input type="button" id="reg_btn" class="reg_btn img_upload" value="입력하기">
 			</div>
-    		
+			<div class="btn_wrap rg_btn_wrap">
+				<a style='display:inline-block; margin-right:10px' class="reg_btn img_upload" href="./list.php?sfst_cate=<?php echo $sfst_cate;?>&ssnd_cate=<?php echo $ssnd_cate;?>&skey=<?php echo $skey;?>">목록</a>
+			</div>
+			<?php endforeach;?>
 	 	</div>
 </form>
 </div>

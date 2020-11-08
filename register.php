@@ -201,12 +201,6 @@ $(document).ready(function() {
     		f.out_price.focus();
     		return;
     	}
-		if (f.description.value == "")
-    	{
-    		alert("상세설명을 입력해주십시오.");
-    		f.description.focus();
-    		return;
-    	}
 		$("#rForm").submit();
 		
 	});
