@@ -18,6 +18,13 @@ ini_set("display_errors", 1);
     //$route = rtrim(strtok($_SERVER['REQUEST_URI'],'?'),'/');
 
     $method = $_SERVER['REQUEST_METHOD'];
+    if($method=='GET'){
+        $route=='product_add' ? 'product_add' : $route;
+        $route=='product_update' ? 'product_update' : $route;
+    }else if($method=='POST'){
+        $route=='product_add' ? 'product_insert' : $route;
+        $route=='product_update' ? 'product_modify' : $route;
+    }
     $searchVO = new \product_management\SearchVO();
     // 객체생성
     $product_info = new \Product_management\Product_managementDAO($pdo, $searchVO);
@@ -47,7 +54,8 @@ ini_set("display_errors", 1);
 	$ssnd_cate = $searchVO -> getSsnd_cate();
 	$skey      = $searchVO -> getSkey();
     $addUrl    = $searchVO -> getAddUrl();
-    
+    echo $sfst_cate."카테고리";
+
     ob_start();
     include "./views/".$view;
     $output = ob_get_clean();
