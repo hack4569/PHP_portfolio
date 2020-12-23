@@ -1,0 +1,50 @@
+/* 2018-02-22
+ * 홈페이지 > 수강신청 : 반응형 작업
+ */
+
+#basic-modal-content h3, #basic-modal-content2 h3 { color:blue; }
+#basic-modal-content p, #basic-modal-content2 p,
+#basic-modal-content label, #basic-modal-content2 label { color:black; }
+.scrolltbody {
+    display: block;
+    width: 550px;
+    border-collapse: collapse;
+    border: 2px solid #000;
+    color:black;
+}
+.scrolltbody th { border: 1px solid #000; background: pink; }
+.scrolltbody td { border: 1px solid #000; border-top: 0; }
+.scrolltbody tbody {
+    display: block;
+    height: 420px;
+    overflow: auto;
+}
+.scrolltbody tbody tr {
+    height: 22px; /* ie 8,9,10  */
+}
+.scrolltbody th:nth-of-type(1), .scrolltbody td:nth-of-type(1) { width: 50px;padding:0 3px; }
+.scrolltbody th:nth-of-type(2), .scrolltbody td:nth-of-type(2) { width: 140px;padding:0 3px; }
+.scrolltbody th:nth-of-type(3), .scrolltbody td:nth-of-type(3) { width: 140px;padding:0 3px; }
+.scrolltbody th:last-child { width: 230px;padding:5px 3px; }
+.scrolltbody td:last-child { width: calc( 230px - 19px );padding:0 3px;  }
+
+p.modalComent { display:block;margin-top:-25px;margin-bottom:5px; }
+div#fileBox {display:block;margin:10px 5px;height:100px;border:gray 2px dotted;overflow: auto;}
+
+/* mobile */
+@media all and (max-width: 430px){
+	/* styletable */
+	.styletable table td {position:relative;float:left;width:100%; padding-left:2% !important;box-sizing:border-box; text-align:left; border-left:1px solid #ddd; }/* td내용 우측에 타이틀 들어갈 영역 만듬 */
+	
+	#simplemodal-container {height:300px; width:300px;}
+	.scrolltbody {width: 300px; display:block; }
+	.scrolltbody tbody {height:180px;}
+	.scrolltbody th:nth-of-type(1), .scrolltbody td:nth-of-type(1) { width: 100%;}
+	
+	p.modalComent { display:block;margin-top:20px;margin-bottom:3px;}
+}
+
+a.type1_mini,
+button.type1_mini {display:inline-block;margin:0;padding:3px 10px;box-sizing:border-box;text-align:center;font-size:11px;color:#fff;background:#9ca3ad;border-radius:5px;}
+a.type1_mini:hover,
+button.type1_mini:hover {background:#4560ad;color:#fff !important;}
