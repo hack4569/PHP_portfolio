@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product_info;
 use App\Models\Sales_info;
+use App\Models\Attachments;
 use Illuminate\Support\Facades\Storage;
 
 class Product_managementController extends Controller
@@ -14,17 +15,45 @@ class Product_managementController extends Controller
     protected $product_info;
     protected $sales_info;
     protected $request;
+    protected $attachments;
+
+    /**
+     *  The redirect instance
+     */
+    protected $skey;
+    protected $sfst_cate;
+    protected $ssnd_cate;
+    protected $redirectUrl;
+    protected $searchData;
     /**
      *  Create a new controller instance
      *
      * @param Product_info $product_info
+     * @param Sales_info $sales_info_info
+     * @param Request $request
+     * @param SearchPdtRequest $searchPdtRequest
      * @return void
      */
-    public function __construct(Product_info $product_info, Sales_info $sales_info, Request $request)
+    public function __construct(Product_info $product_info, Sales_info $sales_info, Request $request, Attachments $attachments)
     {
+        //테이블 변수
         $this->product_info = $product_info;
         $this->sales_info = $sales_info;
+        $this->attachments = $attachments;
+        //request 변수
         $this->request = $request;
+
+        //redirect 변수
+        $this->sfst_cate = $this->request->input('sfst_cate');
+        $this->ssnd_cate = $this->request->input('ssnd_cate');
+        $this->skey = $this->request->input('skey');
+        $this->redirectUrl = 'sfst_cate='.$this->sfst_cate.'&ssnd_cate='.$this->ssnd_cate.'&skey='.$this->skey;
+        $this->searchData = array(
+            'sfst_cate' => $this->sfst_cate,
+            'ssnd_cate' => $this->ssnd_cate,
+            'skey' => $this->skey
+        );
+        //페이지스킨변경
         \Illuminate\Pagination\Paginator::useBootstrap();
     }
 
@@ -35,16 +64,10 @@ class Product_managementController extends Controller
      */
     public function index()
     {
-        $skey = $this->request->input('skey');
-        $sfst_cate = $this->request->input('sfst_cate');
-        $ssnd_cate = $this->request->input('ssnd_cate');
-        $searchData = array(
-            'sfst_cate' => $sfst_cate,
-            'ssnd_cate' => $ssnd_cate,
-            'skey' => $skey
-        );
-        $sfst_cate=='All' ? $sfst_cate='' : $sfst_cate=$sfst_cate;
-        $ssnd_cate=='All' ? $ssnd_cate='' : $ssnd_cate=$ssnd_cate;
+        $this->sfst_cate=='All' ? $sfst_cate='' : $sfst_cate=$this->sfst_cate;
+        $this->ssnd_cate=='All' ? $ssnd_cate='' : $ssnd_cate=$this->ssnd_cate;
+        $skey= $this->skey;
+
         $list = $this->product_info->leftJoin('sales_info','product_info.product_code', '=', 'sales_info.product_code')
         ->where('sales_info.isnew','=','new')
         ->when($sfst_cate, function($query,$sfst_cate){
@@ -61,7 +84,8 @@ class Product_managementController extends Controller
 
         return view('productManagement.list')->with([
             'list'=>$list,
-            'searchData'=> $searchData
+            'searchData'=> $this->searchData,
+            'redirectUrl'=>$this->redirectUrl
         ]);
         //return view('welcome');
     }
@@ -121,7 +145,7 @@ class Product_managementController extends Controller
         if(!$sales_info){
             return back()->with('flash_message', '글이 저장되지 않았습니다.')->withInput();
         }
-        return redirect('/wine/adm/product_managements')->with('flash_message', '작성하신 글이 저장되었습니다.');
+        return redirect('/wine/adm/product_managements?'.$this->redirectUrl)->with('flash_message', '작성하신 글이 저장되었습니다.');
     }
 
     /**
@@ -131,7 +155,10 @@ class Product_managementController extends Controller
      */
     public function create()
     {
-        return view('productManagement.create');
+        return view('productManagement.create')->with([
+            'redirectUrl'=>$this->redirectUrl,
+            'searchData'=>$this->searchData
+        ]);
     }
 
     /**
@@ -160,7 +187,9 @@ class Product_managementController extends Controller
             ->get();
         return view('productManagement.edit')->with([
             'products'=>$products,
-            'product_code'=>$product_code
+            'product_code'=>$product_code,
+            'redirectUrl'=>$this->redirectUrl,
+            'searchData'=>$this->searchData
         ]);
     }
 
@@ -204,7 +233,7 @@ class Product_managementController extends Controller
                 'eng_name'=>$request->eng_name,
                 'stock'=>$request->stock
             ]);
-        return redirect('/wine/adm/product_managements');
+        return redirect('/wine/adm/product_managements?'.$this->redirectUrl);
     }
 
     /**
@@ -214,8 +243,9 @@ class Product_managementController extends Controller
     public function destroy()
     {
         $this->sales_info->destroy($this->request->selectdel);
+        $this->attachments->destroy($this->request->selectdel);
         $this->product_info->destroy($this->request->selectdel);
-        return redirect('/wine/adm/product_managements');
+        return redirect('/wine/adm/product_managements?'.$this->redirectUrl);
     }
 
     function attachments_path($path='')

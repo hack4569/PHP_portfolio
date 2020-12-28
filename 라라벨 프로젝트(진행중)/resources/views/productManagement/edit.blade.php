@@ -15,6 +15,9 @@
     <form id="rForm" name="rForm" action="/wine/adm/product_managements/{{$product_code}}" method="post" enctype="multipart/form-data">
         @csrf
         {!! method_field('put') !!}
+        <input type="hidden" name="sfst_cate" value="{{$searchData['sfst_cate']}}">
+        <input type="hidden" name="ssnd_cate" value="{{$searchData['ssnd_cate']}}">
+        <input type="hidden" name="skey" value="{{$searchData['skey']}}">
         <div class="product_list_cate layout">
             <p class="manager_cate_font">
                 카테고리
@@ -88,7 +91,7 @@
             <input type="button" id="reg_btn" class="reg_btn img_upload" value="입력하기">
         </div>
         <div class="btn_wrap rg_btn_wrap">
-            <a style='display:inline-block; margin-right:10px' class="reg_btn img_upload" href="/wine/adm/product_managements">목록</a>
+            <a style='display:inline-block; margin-right:10px' class="reg_btn img_upload" href="/wine/adm/product_managements?{{$redirectUrl}}">목록</a>
         </div>
     </form>
 @endsection

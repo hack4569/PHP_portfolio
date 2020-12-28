@@ -12,7 +12,7 @@
 @section('sub_title', '상품목록')
 
 @section('content')
-<div class="layout1"><a href="/wine/adm/product_managements/create" class="btn_add">제품 추가</a></div>
+<div class="layout1"><a href="/wine/adm/product_managements/create?{{$redirectUrl}}" class="btn_add">제품 추가</a></div>
 			<div class="product_list_cate">
 				<form name="rForm" id="rForm" method="get" action="/wine/adm/product_managements">
 					<p class="manager_cate_font">
@@ -47,11 +47,11 @@
 						</div>
 					</div>
 				</form>
-				<form action="/wine/adm/product_managements/destroy" name="delForm" id="delForm" method="post">
+				<form action="/wine/adm/product_managements/destroy?{{$redirectUrl}}" name="delForm" id="delForm" method="post">
                     @csrf
-					<input type="hidden" name="sfst_cate" value="<?php //echo $sfst_cate;?>">
-					<input type="hidden" name="ssnd_cate" value="<?php //echo $ssnd_cate;?>">
-					<input type="hidden" name="skey" value="<?php //echo urldecode($skey);?>">
+                    <input type="hidden" name="sfst_cate" value="{{$searchData['sfst_cate']}}">
+                    <input type="hidden" name="ssnd_cate" value="{{$searchData['ssnd_cate']}}">
+                    <input type="hidden" name="skey" value="{{$searchData['skey']}}">
 					<div class="productlist_content">
 					<table summary="진행현황목록표" class="table_list">
 						<caption>진행현황 목록표</caption>
@@ -98,7 +98,7 @@
                                         <td>{{$var->in_price}}</td>
                                         <td>{{$var->out_price}}</td>
                                         <td>
-                                            <a href="/wine/adm/product_managements/{{$var->product_code}}/edit" name="btn_modify"  class="btn_modify" id="btn_modify">수정</a>
+                                            <a class="btn_modify" href="/wine/adm/product_managements/{{$var->product_code}}/edit?{{$redirectUrl}}">수정</a>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -122,7 +122,6 @@ $(document).ready(function(){
 	$("#skey_submit").click(function(){
 		$("#rForm").submit();
 	});
-
 	//선택삭제버튼
 	$("#btn_seldel").click(function(){
 		var chk_count = 0;
