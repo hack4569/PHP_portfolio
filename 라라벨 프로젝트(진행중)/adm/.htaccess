@@ -1,3 +1,0 @@
-RewriteEngin on
-RewriteBase /
-RewriteRule ^([^.?]+)$ /wine/adm/product_management/index.php
