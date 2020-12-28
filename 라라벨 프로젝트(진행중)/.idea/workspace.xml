@@ -176,7 +176,7 @@
       <workItem from="1608846826434" duration="2804000" />
       <workItem from="1608852661225" duration="619000" />
       <workItem from="1608858009965" duration="51935000" />
-      <workItem from="1609111241796" duration="2116000" />
+      <workItem from="1609111241796" duration="7225000" />
     </task>
     <servers />
   </component>
@@ -188,7 +188,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="php-line-method">
           <url>file://$PROJECT_DIR$/app/Http/Controllers/Product_managementController.php</url>
-          <line>150</line>
+          <line>153</line>
           <properties>
             <option name="className" value="\App\Http\Controllers\Product_managementController" />
             <option name="methodName" value="edit" />

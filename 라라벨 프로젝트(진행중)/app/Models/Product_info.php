@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product_info extends Model
 {
     use HasFactory;
+
     protected $table = 'product_info';
     protected $primaryKey = 'product_code';
     const UPDATED_AT = 'update_date';
@@ -19,5 +20,13 @@ class Product_info extends Model
     public function sales_info()
     {
         return $this->hasMany('App\Models\Sales_info');
+    }
+
+    /**
+     * Get the sales_info record associated with the user.
+     */
+    public function attachments()
+    {
+        return $this->hasOne('App\Models\Attachments');
     }
 }

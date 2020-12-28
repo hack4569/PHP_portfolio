@@ -10,7 +10,7 @@ class Sales_info extends Model
     use HasFactory;
 
     protected $table = 'sales_info';
-    protected $primaryKey = 'product_code';
+    protected $primaryKey = 'key_id';
     const UPDATED_AT = 'update_time';
     const CREATED_AT = 'regist_time';
 

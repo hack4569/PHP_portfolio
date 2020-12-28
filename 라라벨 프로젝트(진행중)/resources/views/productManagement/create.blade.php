@@ -70,10 +70,6 @@
                 <input type="text" name="personality" value="{{old('personality')}}" class="rg_input" id="personality">
             </div>
             <div class="layout">
-                <p class="manager_cate_font">상품이미지</p>
-                <input type="file" id="img_upload" name="image[]" multiple="multiple">
-            </div>
-            <div class="layout">
                 <p class="manager_cate_font">재고수량</p>
                 <input type="text" name="stock" value="{{old('stock')}}" class="rg_input1" id="stock">
             </div>

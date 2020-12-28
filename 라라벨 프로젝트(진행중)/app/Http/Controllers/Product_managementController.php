@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product_info;
 use App\Models\Sales_info;
+use Illuminate\Support\Facades\Storage;
+
 class Product_managementController extends Controller
 {
     /**
@@ -71,7 +73,6 @@ class Product_managementController extends Controller
     public function store()
     {
         $request = $this->request;
-
         $rules = [
             'eng_name' => 'required',
             'kor_name' => 'required'
@@ -83,6 +84,7 @@ class Product_managementController extends Controller
             'eng_name' => '영문명',
             'kor_name' => '한글명'
         ];
+
         $validator = \Validator::make($request->all(), $rules, $messages, $customattribute);
         if($validator->fails()){
             return back()->withErrors($validator)->withInput();
@@ -106,6 +108,7 @@ class Product_managementController extends Controller
         if(!$product_info){
             return back()->with('flash_message', '글이 저장되지 않았습니다.')->withInput();
         }
+
         $key = $product_info->product_code;
         $sales_info->product_code = $key;
         $sales_info->eng_name = $request->eng_name;
@@ -213,5 +216,10 @@ class Product_managementController extends Controller
         $this->sales_info->destroy($this->request->selectdel);
         $this->product_info->destroy($this->request->selectdel);
         return redirect('/wine/adm/product_managements');
+    }
+
+    function attachments_path($path='')
+    {
+        return ('files'.($path ? DIRECTORY_SEPARATOR.$path : $path));
     }
 }
