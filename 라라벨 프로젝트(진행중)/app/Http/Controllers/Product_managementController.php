@@ -94,50 +94,21 @@ class Product_managementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(\App\Http\Requests\ProductRequest $request)
     {
-        $request = $this->request;
-        $rules = [
-            'eng_name' => 'required',
-            'kor_name' => 'required'
-        ];
-        $messages = [
-            'required' => ':attribute (는)은 필수 입력 항목입니다.'
-        ];
-        $customattribute = [
-            'eng_name' => '영문명',
-            'kor_name' => '한글명'
-        ];
-
-        $validator = \Validator::make($request->all(), $rules, $messages, $customattribute);
-        if($validator->fails()){
-            return back()->withErrors($validator)->withInput();
-        }
-
         $product_info = $this->product_info;
         $sales_info = $this->sales_info;
 
-        $product_info->fst_cate = $request->fst_cate;
-        $product_info->snd_cate = $request->snd_cate;
-        $product_info->eng_name = $request->eng_name;
-        $product_info->kor_name = $request->kor_name;
-        $product_info->origin = $request->origin;
-        $product_info->type = $request->type;
-        $product_info->personality = $request->personality;
-        $product_info->in_price = $request->in_price;
-        $product_info->out_price = $request->out_price;
-        $product_info->descr = $request->description;
-
-        $product_info->save();
+        $product_info->create($request->all());
         if(!$product_info){
             return back()->with('flash_message', '글이 저장되지 않았습니다.')->withInput();
         }
 
-        $key = $product_info->product_code;
+        $key = $product_info->latest()->first()->product_code;
         $sales_info->product_code = $key;
         $sales_info->eng_name = $request->eng_name;
-        $sales_info->quantity = 0;
-        $sales_info->count = 0;
+//        $sales_info->quantity = 0;
+//        $sales_info->count = 0;
         $sales_info->initial_stock = $request->stock;
         $sales_info->stock = $request->stock;
         $sales_info->isnew = 'new';
@@ -145,6 +116,7 @@ class Product_managementController extends Controller
         if(!$sales_info){
             return back()->with('flash_message', '글이 저장되지 않았습니다.')->withInput();
         }
+
         return redirect('/wine/adm/product_managements?'.$this->redirectUrl)->with('flash_message', '작성하신 글이 저장되었습니다.');
     }
 
@@ -199,31 +171,22 @@ class Product_managementController extends Controller
      * @param  int  $product_code
      * @return \Illuminate\Http\Response
      */
-    public function update($product_code)
+    public function update($product_code, \App\Http\Requests\ProductRequest $request)
     {
-        $request = $this->request;
-        $rules = [
-            'eng_name' => ['required'],
-            'kor_name' => ['required']
-        ];
-        $validator = \Validator::make($request->all(), $rules);
-        if($validator->fails()){
-            return back()->withErrors($validator)->withInput();
-        }
-        $product_info = $this->product_info->where('product_code', $product_code)->first();
 
-        $product_info->fst_cate = $request->fst_cate;
-        $product_info->snd_cate = $request->snd_cate;
-        $product_info->eng_name = $request->eng_name;
-        $product_info->kor_name = $request->kor_name;
-        $product_info->origin = $request->origin;
-        $product_info->type = $request->type;
-        $product_info->personality = $request->personality;
-        $product_info->in_price = $request->in_price;
-        $product_info->out_price = $request->out_price;
-        $product_info->descr = $request->description;
+        $product_info = $this->product_info->where('product_code', $product_code)->update([
+            'fst_cate' => $request->fst_cate,
+            'snd_cate' => $request->snd_cate,
+            'eng_name' => $request->eng_name,
+            'kor_name' => $request->kor_name,
+            'origin' => $request->origin,
+            'type' => $request->type,
+            'personality' => $request->personality,
+            'in_price' => $request->in_price,
+            'out_price' => $request->out_price,
+            'descr' => $request->description
+        ]);
 
-        $product_info->save();
         if(!$product_info){
             return back()->with('flash_message', '글이 저장되지 않았습니다.')->withInput();
         }
@@ -233,6 +196,9 @@ class Product_managementController extends Controller
                 'eng_name'=>$request->eng_name,
                 'stock'=>$request->stock
             ]);
+        if(!$sales_info){
+            return back()->with('flash_message', '글이 저장되지 않았습니다.')->withInput();
+        }
         return redirect('/wine/adm/product_managements?'.$this->redirectUrl);
     }
 

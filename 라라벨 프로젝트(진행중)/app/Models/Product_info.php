@@ -13,7 +13,7 @@ class Product_info extends Model
     protected $primaryKey = 'product_code';
     const UPDATED_AT = 'update_date';
     const CREATED_AT = 'regist_date';
-
+    protected $fillable = ['eng_name','kor_name','fst_cate','snd_cate','origin','type','personality','in_price','out_price','descr'];
     /**
      * Get the sales_info record associated with the user.
      */
